@@ -7,6 +7,7 @@ type Service interface {
   Getlink(string) (string, error)
   //LoadInfo(string) (*Item, error)
   Close() error
+ 
 }
 
 type Item struct {

@@ -1,32 +1,40 @@
-package redisdb
+package redis
 
-import(
-	"github.com/gomodule/redigo"
+import (
+	
+	"time"
+
+	"github.com/gomodule/redigo/redis"
    "../operation"
+   "fmt"
+   "strconv"
+   "math/rand"
    "../conversion"
-
+	
 )
-//var pool *redisclient.Pool
-type redis struct{ pool *redisclient.Pool }
 
-func InitPool(host, port, password string) (operation.Service, error) {
-  connectionectionType := "tcp"
-  pool := &redisclient.Pool{
+
+
+type redisdb struct{ pool *redis.Pool }
+
+func New(host, port, password string) (*redisdb,error){
+  pool := &redis.Pool{
      MaxIdle:     10,
      IdleTimeout: 240 * time.Second,
-     Dial: func() (redisclient.connection, error) {
-        return redisclient.Dial(connectionectionType, fmt.Sprintf("%s:%s", host, port))
+     Dial: func() (redis.Conn, error) {
+        return redis.Dial("tcp", fmt.Sprintf("%s:%s", host, port))
      },
   }
 
-  return &redis{pool}, nil
+  return &redisdb{pool}, nil
 }
 
-func (r *redis) doesExists(id uint64) bool {
-   connection := r.pool.Get()
-   defer connection.Close()
+
+func (r *redisdb) isUsed(id uint64) bool {
+   conn := r.pool.Get()
+   defer conn.Close()
  
-   exists, err := redisclient.Bool(connection.Do("EXISTS", "Shortener:"+strconv.FormatUint(id, 10)))
+   exists, err := redis.Bool(conn.Do("EXISTS", "Shortener:"+strconv.FormatUint(id, 10)))
    if err != nil {
       return false
    }
@@ -34,53 +42,64 @@ func (r *redis) doesExists(id uint64) bool {
  }
  
  
- func (r *redis) Store(url string, expires time.Time) (string, error) {
-   connection := r.pool.Get()
-   defer connection.Close()
+ func (r *redisdb) Store(url string, expires time.Time) (string, error) {
+   conn := r.pool.Get()
+   defer conn.Close()
  
    var id uint64
  
-   for used := true; used; used = r.doesExists(id) {
+   for used := true; used; used = r.isUsed(id) {
       id = rand.Uint64()
    }
  
    shortLink := operation.Item{id, url, expires.Format("2006-01-02 15:04:05.728046 +0300 EEST"), 0}
  
-   _, err := connection.Do("HMSET", redisclient.Args{"Shortener:" + strconv.FormatUint(id, 10)}.AddFlat(shortLink)...)
+   _, err := conn.Do("HMSET", redis.Args{"Shortener:" + strconv.FormatUint(id, 10)}.AddFlat(shortLink)...)
    if err != nil {
       return "", err
    }
  
-   _, err = connection.Do("EXPIREAT", "Shortener:"+strconv.FormatUint(id, 10), expires.Unix())
+   _, err = conn.Do("EXPIREAT", "Shortener:"+strconv.FormatUint(id, 10), expires.Unix())
    if err != nil {
       return "", err
    }
  
    return conversion.Encode(id), nil
  }
- func (r *redis) Getlink(code string) (string, error) {
-   connection := r.pool.Get()
-   defer connection.Close()
+
+func (r *redisdb) Getlink(code string) (string, error) {
+   conn := r.pool.Get()
+   defer conn.Close()
  
    decodedId, err := conversion.Decode(code)
    if err != nil {
       return "", err
    }
  
-   urlString, err := redisclient.String(connection.Do("HGET", "Shortener:"+strconv.FormatUint(decodedId, 10), "url"))
+   urlString, err := redis.String(conn.Do("HGET", "Shortener:"+strconv.FormatUint(decodedId, 10), "url"))
    if err != nil {
       return "", err
    } else if len(urlString) == 0 {
-      return "", storage.ErrNoLink
+      return "", err
    }
  
-   _, err = connection.Do("HINCRBY", "Shortener:"+strconv.FormatUint(decodedId, 10), "visits", 1)
+   _, err = conn.Do("HINCRBY", "Shortener:"+strconv.FormatUint(decodedId, 10), "visits", 1)
  
    return urlString, nil
  }
  
+ func (r *redisdb) isAvailable(id uint64) bool {
+   conn := r.pool.Get()
+   defer conn.Close()
  
+   exists, err := redis.Bool(conn.Do("EXISTS", "Shortener:"+strconv.FormatUint(id, 10)))
+   if err != nil {
+      return false
+   }
+   return !exists
+ }
  
- func (r *redis) Close() error {
+  
+ func (r *redisdb) Close() error {
    return r.pool.Close()
  }

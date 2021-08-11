@@ -1,10 +1,9 @@
-package convertTo62
-
+package conversion
 import(
 	"math"
 	"strings"
 	"errors"
-	"fmt"
+	//"fmt"
 )
 
   const (
