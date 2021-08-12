@@ -40,6 +40,8 @@ func New(schema string, host string, operation operation.Service) *router.Router
   func responseHandler(h func(ctx *fasthttp.RequestCtx) (interface{}, int, error)) fasthttp.RequestHandler {
 	return func(ctx *fasthttp.RequestCtx) {
 	   data, status, err := h(ctx)
+	   fmt.Println(data)
+	   
 	   if err != nil {
 		  data = err.Error()
 	   }
@@ -113,3 +115,5 @@ func New(schema string, host string, operation operation.Service) *router.Router
 	ctx.Redirect(uri, http.StatusMovedPermanently)
   }
    
+
+  

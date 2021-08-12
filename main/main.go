@@ -18,6 +18,7 @@ func main() {
   if err != nil {
      log.Fatal(err)
   }
+  defer service.Close()
   router := handler.New(configuration.Options.Schema, configuration.Options.Prefix, service)
 
   log.Fatal(fasthttp.ListenAndServe(":" + configuration.Server.Port, router.Handler))
