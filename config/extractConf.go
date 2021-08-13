@@ -34,6 +34,3 @@ func ExtractConfiguration(path string) (*Config, error) {
   return &cfg, nil
 }
 
-/*
-curl -L -X POST 'localhost:8080/encode' -H 'Content-Type: application/json' --data-raw '{ "url": "https://www.alexedwards.net/blog/working-with-rediss"}'
-*/
