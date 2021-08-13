@@ -1,10 +1,10 @@
 {
     "server": {
-      "port": "8082"
+      "port": "8080"
     },
     "options": {
       "schema": "http",
-      "prefix": "localhost:8082"
+      "prefix": "localhost:8080"
     },
     "redis": {
       "host": "127.0.0.1",
