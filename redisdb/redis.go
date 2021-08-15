@@ -7,8 +7,9 @@ import (
 	"math/rand"
 	"strconv"
 
-	"../conversion"
-	"../operation"
+	"urlShortner/conversion"
+	"urlShortner/operation"
+
 	"github.com/gomodule/redigo/redis"
 )
 
@@ -49,6 +50,7 @@ func (r *redisdb) Store(url string, expires time.Time) (string, error) {
 
 	shortLink := operation.Item{id, url, expires.Format("2006-01-02 15:04:05.728046 +0300 EEST"), 0}
 	fmt.Println("shortlink", shortLink)
+	fmt.Println()
 	link1, err := conn.Do("HMSET", redis.Args{"Shortener:" + strconv.FormatUint(id, 10)}.AddFlat(shortLink)...)
 	if err != nil {
 		fmt.Println("erro in storing")
