@@ -14,9 +14,9 @@ Description of package
 5. main - includes main.go
 
 Steps to run
-1. go to main
-2. To run use following command --> go run main.go  
-3. start redis-server on another terminal
+1. start redis-server on another terminal
+2. go to main
+3. To run use following command --> go run main.go  
 4. run command on other terminal -->  curl -L -X POST 'localhost:8080/encode' \
                                       -H 'Content-Type: application/json' \
                                       --data-raw '{
