@@ -1,5 +1,7 @@
 # urlShortner
 
+# urlShortner
+
 Description - url shortner API using golang redis
 Installation
 1. Install go https://www.digitalocean.com/community/tutorials/how-to-install-go-on-ubuntu-18-04
@@ -20,10 +22,11 @@ Steps to run
 4. run command on other terminal -->  curl -L -X POST 'localhost:8080/encode' \
                                       -H 'Content-Type: application/json' \
                                       --data-raw '{
-                                          "url": "https://www.google.com",
-                                          "expires": date time format
+                                          "url": "https://www.google.com"
+                                          
                                       }' 
-
+5. After receiving output {"success":true,"shortUrl":"http://localhost:8080/2dDEQAS1"}
+ try http://localhost:8080/2dDEQAS1 on any browser should redirect to google.com
 Dependent packages - use go get <github packages>
 1.  "github.com/gomodule/redigo/redis"
 2.  "github.com/fasthttp/router"
