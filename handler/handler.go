@@ -6,7 +6,7 @@ import (
 	"log"
 	"net/http"
 	//"strconv"
-	"github.com/router"
+	"github.com/fasthttp/router"
 	//"github.com/gomodule/redigo/redis"
 	"github.com/valyala/fasthttp"
 	//"github.com/gorilla/mux"
