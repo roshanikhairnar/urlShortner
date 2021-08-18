@@ -4,7 +4,6 @@ import (
 	"time"
 
 	"fmt"
-	"math/rand"
 	"strconv"
 
 	"urlShortner/conversion"
@@ -14,6 +13,8 @@ import (
 )
 
 type redisdb struct{ pool *redis.Pool }
+
+const UserId = "e0dba740-fc4b-4977-872c-d360239e6b1a"
 
 func New(host string, port string) (*redisdb, error) {
 	pool := &redis.Pool{
@@ -38,20 +39,20 @@ func (r *redisdb) doesExist(id uint64) bool {
 	return exists
 }
 
-func (r *redisdb) Store(url string, expires time.Time) (string, error) {
+func (r *redisdb) Store(url string) (string, error) {
 	conn := r.pool.Get()
 	defer conn.Close()
 
-	var id uint64
+	//var id =""
+	/*
+		if r.doesExist(url) {
+			fmt.Println("url exists")
+		} */
 
-	for used := true; used; used = r.doesExist(id) {
-		id = rand.Uint64()
-	}
-
-	shortLink := operation.Item{id, url, expires.Format("2006-01-02 15:04:05.728046 +0300 EEST"), 0}
+	shortLink := operation.Item{url, conversion.GenerateShortLink(url, UserId)}
 	fmt.Println("shortlink", shortLink)
-	fmt.Println()
-	link1, err := conn.Do("HMSET", redis.Args{"Shortener:" + strconv.FormatUint(id, 10)}.AddFlat(shortLink)...)
+
+	link1, err := conn.Do("HMSET", redis.Args{"Shortener:" + conversion.GenerateShortLink(url, UserId)}.AddFlat(shortLink)...)
 	if err != nil {
 		fmt.Println("erro in storing")
 		return "", err
@@ -59,25 +60,19 @@ func (r *redisdb) Store(url string, expires time.Time) (string, error) {
 
 	fmt.Println("HMSET return", link1)
 
-	expiredTime, err := conn.Do("EXPIREAT", "Shortener:"+strconv.FormatUint(id, 10), expires.Unix())
-	if err != nil {
-		return "", err
-	}
-	fmt.Println(expiredTime)
-
-	return conversion.Encode(id), nil
+	return conversion.GenerateShortLink(url, UserId), nil
 }
 
 func (r *redisdb) Getlink(code string) (string, error) {
 	conn := r.pool.Get()
 	defer conn.Close()
 	fmt.Println("code:", code)
-	decodedId, err := conversion.Decode(code)
+	/* decodedId, err := conversion.Decode(code)
 	if err != nil {
 		return "", err
 	}
-	fmt.Println("decoded link:", decodedId)
-	urlString, err := redis.String(conn.Do("HGET", "Shortener:"+strconv.FormatUint(decodedId, 10), "url"))
+	fmt.Println("decoded link:", decodedId) */
+	urlString, err := redis.String(conn.Do("HGET", "Shortener:"+code, "url"))
 	fmt.Println(urlString)
 	if err != nil {
 		return "", err
@@ -85,7 +80,7 @@ func (r *redisdb) Getlink(code string) (string, error) {
 		return "", err
 	}
 
-	_, err = conn.Do("HINCRBY", "Shortener:"+strconv.FormatUint(decodedId, 10), "visits", 1)
+	//_, err = conn.Do("HINCRBY", "Shortener:"+strconv.FormatUint(code, 10), "visits", 1)
 
 	return urlString, nil
 }
