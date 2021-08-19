@@ -21,7 +21,7 @@ Steps to run
                                       -H 'Content-Type: application/json' \
                                       --data-raw '{
                                           "url": "https://www.google.com",
-                                          "expires": date time format
+                                          "expires": "year-month-date hr:min:sec"
                                       }' 
 
 Dependent packages - use go get <github packages>
