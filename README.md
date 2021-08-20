@@ -35,11 +35,18 @@ Dependent packages - use go get <github packages>
 
 
 **docker image link** - https://hub.docker.com/r/roshanidocker/roshani_docker_repo/tags?page=1&ordering=last_updated
+  
 **Pull REDIS Docker image**
+  
   docker pull redis
+  
 **Run a REDIS Docker container**
+  
   docker run --name my-redis -d redis
+  
 **Pull docker image of urlShortner**
+  
   docker pull roshanidocker/roshani_docker_repo:my-urlshortner-golang
+  
   docker run -it --rm -p 8080:8080 --link my-redis:redis --name urlshortener roshani_docker_repo:my-urlshortner-golang
 
