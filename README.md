@@ -44,6 +44,11 @@ Dependent packages - use go get <github packages>
   
   docker run --name my-redis -d redis
   
+  #build Docker file 
+  sudo docker build -t my-urlshortner-golang .
+  docker run  -p 8080:8080 --link my-redis1:redis --name my-urlshortner-golang my-urlshortner-golang
+  OR
+  
 **Pull docker image of urlShortner**
   
   docker pull roshanidocker/roshani_docker_repo:my-urlshortner-golang
