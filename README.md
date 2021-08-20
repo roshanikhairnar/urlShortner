@@ -29,3 +29,5 @@ Dependent packages - use go get <github packages>
 2.  "github.com/fasthttp/router"
 3.  "github.com/valyala/fasthttp"
 
+**for branch Roshani_url_algo**
+  **docker image link** - https://hub.docker.com/r/roshanidocker/roshani_docker_repo/tags?page=1&ordering=last_updated
