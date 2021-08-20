@@ -15,7 +15,6 @@ Description of package
 
 Steps to run
 1. start redis-server on another terminal
-2. go to main
 3. To run use following command --> go run main.go  
 4. run command on other terminal -->  curl -L -X POST 'localhost:8080/encode' \
                                       -H 'Content-Type: application/json' \
@@ -29,5 +28,18 @@ Dependent packages - use go get <github packages>
 2.  "github.com/fasthttp/router"
 3.  "github.com/valyala/fasthttp"
 
-**for branch Roshani_url_algo**
-  **docker image link** - https://hub.docker.com/r/roshanidocker/roshani_docker_repo/tags?page=1&ordering=last_updated
+
+
+   
+
+
+
+**docker image link** - https://hub.docker.com/r/roshanidocker/roshani_docker_repo/tags?page=1&ordering=last_updated
+**Pull REDIS Docker image**
+  docker pull redis
+**Run a REDIS Docker container**
+  docker run --name my-redis -d redis
+**Pull docker image of urlShortner**
+  docker pull roshanidocker/roshani_docker_repo:my-urlshortner-golang
+  docker run -it --rm -p 8080:8080 --link my-redis:redis --name urlshortener roshani_docker_repo:my-urlshortner-golang
+
